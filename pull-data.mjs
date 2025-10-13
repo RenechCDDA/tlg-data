@@ -311,11 +311,6 @@ export default async function run({ github, context, dryRun = false }) {
       "data/latest/all_mods.json",
     );
     }
-  } else {
-    console.log(
-      `Latest release (${latestRelease}) not in updated builds, skipping copy to latest.`,
-    );
-  }
 
   if (dryRun) {
     console.log("(DRY RUN) skipping commit and push.");
