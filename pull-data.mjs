@@ -110,7 +110,7 @@ export default async function run({ github, context, dryRun = false }) {
   });
 
   const latestRelease = releases.find((r) =>
-    r.tag_name.startsWith("cataclysm-tlg-1.0-2025-10-13"),
+    r.tag_name.startsWith("cataclysm-tlg"),
   )?.tag_name;
 
   console.log(`Latest experimental: ${latestRelease}`);
@@ -277,48 +277,6 @@ export default async function run({ github, context, dryRun = false }) {
       await createBlob("data/latest.gz/all.json", zlib.gzipSync(allJson));
       await createBlob("data/latest.gz/all_mods.json", zlib.gzipSync(allModsJson));
     }
-
-
-    console.group("Compiling lang JSON...");
-
-    // Measure both CPU time and wall time
-    console.time("lang JSON");
-    const cpuUsage = process.cpuUsage();
-    const langs = await Promise.all(
-      [...globFn("lang/po/*.po")].map(async (f) => {
-        const lang = path.basename(f.name, ".po");
-        const json = postprocessPoJson(
-          po2json.parse(f.data()),
-        );
-        const jsonStr = JSON.stringify(json);
-        await createBlob(`${pathBase}/lang/${lang}.json`, jsonStr);
-        if (tag_name === latestRelease)
-          await createBlob(
-            `data/latest.gz/lang/${lang}.json`,
-            zlib.gzipSync(jsonStr),
-          );
-
-        // To support searching Chinese translations by pinyin
-        if (lang.startsWith("zh_")) {
-          const pinyin = toPinyin(data, json);
-          const pinyinStr = JSON.stringify(pinyin);
-          await createBlob(`${pathBase}/lang/${lang}_pinyin.json`, pinyinStr);
-          if (tag_name === latestRelease)
-            await createBlob(
-              `data/latest.gz/lang/${lang}_pinyin.json`,
-              zlib.gzipSync(pinyinStr),
-            );
-        }
-        return lang;
-      }),
-    );
-    console.timeEnd("lang JSON");
-    const newUsage = process.cpuUsage(cpuUsage);
-    console.log(
-      `CPU time: ${newUsage.user / 1e6}s user, ${newUsage.system / 1e6}s system`,
-    );
-    console.log(`Found ${Object.keys(langs).length} languages.`);
-    console.groupEnd();
 
 
     newBuilds.push({
