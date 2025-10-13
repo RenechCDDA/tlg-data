@@ -283,7 +283,6 @@ export default async function run({ github, context, dryRun = false }) {
       build_number: tag_name,
       prerelease: release.prerelease,
       created_at: release.created_at,
-      langs,
     });
     console.groupEnd();
   }
@@ -311,17 +310,6 @@ export default async function run({ github, context, dryRun = false }) {
       `data/${latestBuild.build_number}/all_mods.json`,
       "data/latest/all_mods.json",
     );
-    for (const lang of latestBuild.langs) {
-      copyBlob(
-        `data/${latestBuild.build_number}/lang/${lang}.json`,
-        `data/latest/lang/${lang}.json`,
-      );
-      if (lang.startsWith("zh_")) {
-        copyBlob(
-          `data/${latestBuild.build_number}/lang/${lang}_pinyin.json`,
-          `data/latest/lang/${lang}_pinyin.json`,
-        );
-      }
     }
   } else {
     console.log(
