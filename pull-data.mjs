@@ -110,7 +110,7 @@ export default async function run({ github, context, dryRun = false }) {
   });
 
   const latestRelease = releases.find((r) =>
-    r.tag_name.startsWith("cataclysm-tlg"),
+    r.tag_name.startsWith("cataclysm-tlg-1.0-2025-10-13"),
   )?.tag_name;
 
   console.log(`Latest experimental: ${latestRelease}`);
